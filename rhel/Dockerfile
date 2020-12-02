@@ -1,12 +1,10 @@
-# TODO:
-#  1. Test and Fix issues in Dockerfile
-
 ## Stage: Build driver
-FROM centos:centos8 AS build
+FROM registry.access.redhat.com/ubi8:latest AS build
 
 # Build Args - pass with --build-arg flag during build
-ARG D_OFED_VERSION="5.0-2.1.8.0"
-ARG D_OS="rhel8.2"
+ARG D_OFED_VERSION="5.2-1.0.4.0"
+ARG D_OS_VERSION="8.2"
+ARG D_OS="rhel${D_OS_VERSION}"
 ARG D_ARCH="x86_64"
 ARG D_OFED_PATH="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}"
 
@@ -20,7 +18,7 @@ ARG D_WITHOUT_FLAGS="--without-rshim-dkms --without-iser-dkms --without-isert-dk
 WORKDIR /root
 ADD ${D_OFED_URL_PATH} ./
 RUN tar -xf ${D_OFED_TARBALL_NAME}
-RUN dnf -y install make gcc wget perl createrepo kernel-core-$(uname -r) kernel-devel-$(uname -r) pciutils python36-devel ethtool lsof elfutils-libelf-devel rpm-build kernel-rpm-macros python36 tk numactl-libs libmnl tcl binutils kmod procps git autoconf automake libtool
+RUN dnf -y --enablerepo=rhel-8-for-x86_64-baseos-eus-rpms --releasever=${D_OS_VERSION} install make gcc wget perl createrepo kernel-core-$(uname -r) kernel-devel-$(uname -r) pciutils python36-devel ethtool lsof elfutils-libelf-devel rpm-build kernel-rpm-macros python36 tk numactl-libs libmnl tcl binutils kmod procps git autoconf automake libtool hostname
 
 # Install OFED
 RUN /bin/bash -c '/root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/mlnxofedinstall --without-fw-update --kernel-only --add-kernel-support --distro ${D_OS} --skip-repo --force ${D_WITHOUT_FLAGS}'

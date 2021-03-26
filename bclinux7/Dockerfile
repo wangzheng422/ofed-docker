@@ -14,7 +14,7 @@ RUN yum -y update && yum -y remove kernel-headers kernel-devel
 
 RUN yum -y install kernel-bek-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-headers-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-devel-4.19.25-200.1.el7.bclinux.x86_64 
 
-RUN yum -y downgrade glibc-devel glibc-headers glibc glibc-common libgomp cpp && yum -y remove gcc automake autoconf libtool make && yum -y install gcc automake autoconf libtool make
+RUN yum -y downgrade glibc-devel glibc-headers glibc glibc-common libgomp cpp rpm rpm-python rpm-libs rpm-build-libs elfutils-libelf elfutils-libs && yum -y remove gcc automake autoconf libtool make && yum -y install gcc automake autoconf libtool make
 
 # Build Args - pass with --build-arg flag during build
 ARG D_OFED_VERSION="5.2-2.2.0.0"
@@ -23,16 +23,20 @@ ARG D_ARCH="x86_64"
 ARG D_OFED_PATH="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}"
 
 ARG D_OFED_TARBALL_NAME="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}.tgz"
-ARG D_OFED_URL_PATH="https://www.mellanox.com/downloads/ofed/MLNX_OFED-${D_OFED_VERSION}/${D_OFED_TARBALL_NAME}"
+# ARG D_OFED_URL_PATH="https://www.mellanox.com/downloads/ofed/MLNX_OFED-${D_OFED_VERSION}/${D_OFED_TARBALL_NAME}"
+ARG D_OFED_URL_PATH="${D_OFED_TARBALL_NAME}"
 
 # Internal arguments
 ARG D_WITHOUT_FLAGS="--without-rshim-dkms --without-iser-dkms --without-isert-dkms --without-srp-dkms --without-kernel-mft-dkms --without-mlnx-rdma-rxe-dkms"
 
 # Download and extract tarball
 WORKDIR /root
-ADD ${D_OFED_URL_PATH} ./
+COPY ${D_OFED_URL_PATH} ./
 RUN tar -xf ${D_OFED_TARBALL_NAME}
-RUN dnf -y install make gcc wget perl createrepo kernel-core-$(uname -r) kernel-devel-$(uname -r) pciutils python36-devel ethtool lsof elfutils-libelf-devel rpm-build kernel-rpm-macros python36 tk numactl-libs libmnl tcl binutils kmod procps git autoconf automake libtool
+
+RUN yum -y remove file-libs nss-softokn-freebl
+
+RUN yum -y install make gcc wget perl createrepo kernel-bek-core-$(uname -r) kernel-bek-devel-$(uname -r) pciutils python36-devel ethtool lsof elfutils-libelf-devel rpm-build kernel-rpm-macros python36 tk numactl-libs libmnl tcl binutils kmod procps git autoconf automake libtool
 
 # Install OFED
 RUN /bin/bash -c '/root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/mlnxofedinstall --without-fw-update --kernel-only --add-kernel-support --distro ${D_OS} --skip-repo --force ${D_WITHOUT_FLAGS}'
@@ -48,17 +52,6 @@ RUN cp /root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/docs/scripts/op
 
 ## Stage: Build container
 FROM build
-
-RUN /bin/rm -rf /etc/yum.repos.d/* 
-COPY BC*.repo /etc/yum.repos.d/
-
-COPY RPM-GPG-KEY-BCLinux-7 /etc/pki/rpm-gpg/RPM-GPG-KEY-BCLinux-7
-
-RUN yum -y update && yum -y remove kernel-headers kernel-devel 
-
-RUN yum -y install kernel-bek-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-headers-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-devel-4.19.25-200.1.el7.bclinux.x86_64 
-
-RUN yum -y downgrade glibc-devel glibc-headers glibc glibc-common libgomp cpp && yum -y remove gcc automake autoconf libtool make 
 
 WORKDIR /
 ADD ./entrypoint.sh /root/entrypoint.sh

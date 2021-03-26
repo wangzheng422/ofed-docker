@@ -2,11 +2,23 @@
 #  1. Test and Fix issues in Dockerfile
 
 ## Stage: Build driver
-FROM centos:centos8 AS build
+FROM centos:centos7 AS build
+
+
+RUN /bin/rm -rf /etc/yum.repos.d/* 
+COPY BC*.repo /etc/yum.repos.d/
+
+COPY RPM-GPG-KEY-BCLinux-7 /etc/pki/rpm-gpg/RPM-GPG-KEY-BCLinux-7
+
+RUN yum -y update && yum -y remove kernel-headers kernel-devel 
+
+RUN yum -y install kernel-bek-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-headers-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-devel-4.19.25-200.1.el7.bclinux.x86_64 
+
+RUN yum -y downgrade glibc-devel glibc-headers glibc glibc-common libgomp cpp && yum -y remove gcc automake autoconf libtool make && yum -y install gcc automake autoconf libtool make
 
 # Build Args - pass with --build-arg flag during build
-ARG D_OFED_VERSION="5.0-2.1.8.0"
-ARG D_OS="rhel8.2"
+ARG D_OFED_VERSION="5.2-2.2.0.0"
+ARG D_OS="bclinux7.6"
 ARG D_ARCH="x86_64"
 ARG D_OFED_PATH="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}"
 
@@ -36,6 +48,17 @@ RUN cp /root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/docs/scripts/op
 
 ## Stage: Build container
 FROM build
+
+RUN /bin/rm -rf /etc/yum.repos.d/* 
+COPY BC*.repo /etc/yum.repos.d/
+
+COPY RPM-GPG-KEY-BCLinux-7 /etc/pki/rpm-gpg/RPM-GPG-KEY-BCLinux-7
+
+RUN yum -y update && yum -y remove kernel-headers kernel-devel 
+
+RUN yum -y install kernel-bek-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-headers-4.19.25-200.1.el7.bclinux.x86_64 kernel-bek-devel-4.19.25-200.1.el7.bclinux.x86_64 
+
+RUN yum -y downgrade glibc-devel glibc-headers glibc glibc-common libgomp cpp && yum -y remove gcc automake autoconf libtool make 
 
 WORKDIR /
 ADD ./entrypoint.sh /root/entrypoint.sh

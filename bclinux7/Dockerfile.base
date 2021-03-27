@@ -40,4 +40,4 @@ RUN yum -y install make gcc wget perl createrepo kernel-bek-core-$(uname -r) ker
 
 RUN yum -y downgrade python python-libs
 
-RUN yum -y install  python-devel
+RUN yum -y install  python-devel sysvinit-tools

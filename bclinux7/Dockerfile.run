@@ -1,0 +1,13 @@
+# TODO:
+#  1. Test and Fix issues in Dockerfile
+
+## Stage: Build driver
+FROM quay.io/wangzheng422/mofed-wzh-5.2-2.2.0.0-2021-03-27-1906:bclinux7.6-amd64-build AS build
+
+RUN yum -y install sysvinit-tools
+
+WORKDIR /
+ADD ./entrypoint.sh /root/entrypoint.sh
+RUN chmod +x /root/entrypoint.sh
+
+ENTRYPOINT ["/root/entrypoint.sh"]

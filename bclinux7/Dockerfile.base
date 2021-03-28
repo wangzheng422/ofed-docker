@@ -4,7 +4,6 @@
 ## Stage: Build driver
 FROM centos:centos7 AS build
 
-
 RUN /bin/rm -rf /etc/yum.repos.d/* 
 COPY BC*.repo /etc/yum.repos.d/
 
@@ -36,3 +35,5 @@ RUN yum -y install make gcc wget perl createrepo kernel-bek-core-$(uname -r) ker
 RUN yum -y downgrade python python-libs
 
 RUN yum -y install  python-devel sysvinit-tools
+
+RUN yum -y downgrade systemd-libs libselinux openssl-libs libcom_err krb5-libs systemd krb5-libs

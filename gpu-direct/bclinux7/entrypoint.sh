@@ -28,15 +28,16 @@ function has_files_matching() {
 }
 
 function install_prereq_runtime() {
-    echo "Checking for entitlement"
-    ls -l /etc/pki/entitlement-host
-    echo "Enabling RHOCP and EUS RPM repos..."
-    dnf config-manager --set-enabled rhocp-4.6-for-rhel-8-x86_64-rpms || true
-    dnf config-manager --set-enabled rhel-8-for-x86_64-baseos-eus-rpms  || true
+    # echo "Checking for entitlement"
+    # ls -l /etc/pki/entitlement-host
+    # echo "Enabling RHOCP and EUS RPM repos..."
+    # dnf config-manager --set-enabled rhocp-4.6-for-rhel-8-x86_64-rpms || true
+    # dnf config-manager --set-enabled rhel-8-for-x86_64-baseos-eus-rpms  || true
     # Install linux headers
     echo "Installing kernel packages & dependencies"
     # TODO: Use os-release to set releasever
-    dnf -y --releasever=8.2 install kernel-core-${KERNEL_VERSION} kernel-headers-${KERNEL_VERSION} kernel-devel-${KERNEL_VERSION} binutils-devel elfutils-libelf-devel gcc make
+    # dnf -y --releasever=8.2 install kernel-core-${KERNEL_VERSION} kernel-headers-${KERNEL_VERSION} kernel-devel-${KERNEL_VERSION} binutils-devel elfutils-libelf-devel gcc make
+    yum -y install kernel-bek-core-${KERNEL_VERSION} kernel-bek-headers-${KERNEL_VERSION} kernel-bek-devel-${KERNEL_VERSION} binutils-devel elfutils-libelf-devel gcc make
     return $?
 }
 

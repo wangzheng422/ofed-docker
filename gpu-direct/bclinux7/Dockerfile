@@ -11,8 +11,10 @@ WORKDIR /root
 # ARG D_NV_PEER_MEM_BRANCH=master
 # RUN git clone --branch ${D_NV_PEER_MEM_BRANCH} https://github.com/Mellanox/nv_peer_memory.git && \
 #     echo "ulimit -c: " && ulimit -c
-ADD nv_peer_memory ./
+COPY nv_peer_memory ./nv_peer_memory
 RUN echo "ulimit -c: " && ulimit -c
+
+RUN chmod +x /root/nv_peer_memory/build_module.sh /root/nv_peer_memory/build_release.sh /root/nv_peer_memory/create_nv.symvers.sh /root/nv_peer_memory/nv_peer_mem
 
 ADD ./entrypoint.sh ./
 RUN chmod +x /root/entrypoint.sh

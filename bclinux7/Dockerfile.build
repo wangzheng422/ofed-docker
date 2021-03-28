@@ -2,7 +2,7 @@
 #  1. Test and Fix issues in Dockerfile
 
 ## Stage: Build driver
-FROM quay.io/wangzheng422/mofed-wzh-5.2-2.2.0.0-2021-03-27-1906:bclinux7.6-amd64-base AS build
+FROM quay.io/wangzheng422/qimgs:mofed-wzh-5.2-2.2.0.0-2021-03-28-1150-bclinux7.6-amd64-base AS build
 
 # Build Args - pass with --build-arg flag during build
 ARG D_OFED_VERSION="5.2-2.2.0.0"
@@ -10,8 +10,18 @@ ARG D_OS="bclinux7.6"
 ARG D_ARCH="x86_64"
 ARG D_OFED_PATH="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}"
 
+ARG D_OFED_TARBALL_NAME="MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}.tgz"
+# ARG D_OFED_URL_PATH="https://www.mellanox.com/downloads/ofed/MLNX_OFED-${D_OFED_VERSION}/${D_OFED_TARBALL_NAME}"
+ARG D_OFED_URL_PATH="${D_OFED_TARBALL_NAME}"
+
 # Internal arguments
 ARG D_WITHOUT_FLAGS="--without-rshim-dkms --without-iser-dkms --without-isert-dkms --without-srp-dkms --without-kernel-mft-dkms --without-mlnx-rdma-rxe-dkms"
+
+# Download and extract tarball
+WORKDIR /root
+COPY ${D_OFED_URL_PATH} ./
+RUN tar -xf ${D_OFED_TARBALL_NAME}
+RUN rm -f ${D_OFED_TARBALL_NAME}
 
 # Install OFED
 RUN /bin/bash -c '/root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/mlnxofedinstall --without-fw-update --kernel-only --add-kernel-support --distro ${D_OS} --skip-repo --force ${D_WITHOUT_FLAGS}'
@@ -25,10 +35,4 @@ RUN sed -i '/ESP_OFFLOAD_LOAD=yes/c\ESP_OFFLOAD_LOAD=no' /etc/infiniband/openib.
 RUN cp /root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/docs/scripts/openibd-post-start-configure-interfaces/post-start-hook.sh /etc/infiniband/post-start-hook.sh && \
     chmod +x /etc/infiniband/post-start-hook.sh
 
-## Stage: Build container
-FROM build
 
-WORKDIR /
-ADD ./entrypoint.sh /root/entrypoint.sh
-
-ENTRYPOINT ["/root/entrypoint.sh"]

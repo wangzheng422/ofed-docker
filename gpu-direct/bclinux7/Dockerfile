@@ -1,7 +1,7 @@
 FROM quay.io/wangzheng422/qimgs:mofed-wzh-5.2-2.2.0.0-2021-03-28-1150-bclinux7.6-amd64-base
 
 # migrate to bclinux
-RUN yum -y downgrade systemd-libs libselinux openssl-libs libcom_err krb5-libs systemd krb5-libs binutils
+# RUN yum -y downgrade systemd-libs libselinux openssl-libs libcom_err krb5-libs systemd krb5-libs binutils
 
 # Install packages
 RUN yum install -y autoconf git ncurses-devel openssl openssl-devel rpm-build systemd-devel

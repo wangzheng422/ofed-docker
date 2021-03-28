@@ -34,6 +34,6 @@ RUN yum -y install make gcc wget perl createrepo kernel-bek-core-$(uname -r) ker
 
 RUN yum -y downgrade python python-libs
 
-RUN yum -y install  python-devel sysvinit-tools
+RUN yum -y install  python-devel sysvinit-tools iproute
 
-RUN yum -y downgrade systemd-libs libselinux openssl-libs libcom_err krb5-libs systemd krb5-libs
+RUN yum -y downgrade systemd-libs libselinux openssl-libs libcom_err krb5-libs systemd krb5-libs binutils

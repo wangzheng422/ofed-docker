@@ -21,7 +21,7 @@ ARG D_WITHOUT_FLAGS="--without-rshim-dkms --without-iser-dkms --without-isert-dk
 WORKDIR /root
 COPY ${D_OFED_URL_PATH} ./
 RUN tar -xf ${D_OFED_TARBALL_NAME}
-RUN rm -f ${D_OFED_TARBALL_NAME}
+# RUN rm -f ${D_OFED_TARBALL_NAME}
 
 # Install OFED
 RUN /bin/bash -c '/root/MLNX_OFED_LINUX-${D_OFED_VERSION}-${D_OS}-${D_ARCH}/mlnxofedinstall --without-fw-update --kernel-only --add-kernel-support --distro ${D_OS} --skip-repo --force ${D_WITHOUT_FLAGS}'

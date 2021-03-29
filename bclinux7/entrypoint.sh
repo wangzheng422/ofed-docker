@@ -55,8 +55,9 @@ function ofed_exist_for_kernel() {
 function rebuild_driver() {
     # Rebuild driver in case installed driver kernel version differs from running kernel
     echo "Rebuilding driver"
-    dnf -y clean expire-cache
-    dnf -y --enablerepo=rhocp-4.6-for-rhel-8-x86_64-rpms --enablerepo=rhel-8-for-x86_64-baseos-eus-rpms --releasever=8.2 install kernel-core-$(uname -r) kernel-devel-$(uname -r) 
+    # dnf -y clean expire-cache
+    # dnf -y --enablerepo=rhocp-4.6-for-rhel-8-x86_64-rpms --enablerepo=rhel-8-for-x86_64-baseos-eus-rpms --releasever=8.2 install kernel-core-$(uname -r) kernel-devel-$(uname -r) 
+    yum -y install kernel-core-$(uname -r) kernel-devel-$(uname -r) 
     dkms autoinstall
 }
 

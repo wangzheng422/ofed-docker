@@ -7,7 +7,7 @@ FROM quay.io/wangzheng422/qimgs:mofed-wzh-5.2-2.2.0.0-2021-03-30-1331-bclinux7.6
 # RUN yum -y install sysvinit-tools
 COPY mlx.repo /etc/yum.repos.d/
 
-RUN yum -y install infiniband-diags opensm
+RUN yum -y install infiniband-diags opensm libibverbs-utils
 
 WORKDIR /
 ADD ./entrypoint.sh /root/entrypoint.sh
